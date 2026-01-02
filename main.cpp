@@ -131,3 +131,24 @@ void insertRow() {
     rows.push_back(newRow); // Add the completed row to the global data storage
     cout << "Row inserted successfully.\n";
 }
+
+// Displays all data in the table in a comma-separated format
+void viewSheet() {
+    cout << "-------------------------------------------\n";
+    cout << "View Attendance Sheet (CSV Mode)\n";
+    cout << "-------------------------------------------\n";
+    
+    // Print column headers
+    for (size_t i = 0; i < columns.size(); i++) {
+        cout << columns[i].name << (i == columns.size() - 1 ? "" : ", ");
+    }
+    cout << endl;
+
+    // Print each row of data
+    for (const auto& row : rows) {
+        for (size_t i = 0; i < row.size(); i++) {
+            cout << row[i] << (i == row.size() - 1 ? "" : ", ");
+        }
+        cout << endl;
+    }
+}
