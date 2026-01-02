@@ -35,3 +35,11 @@ struct Column {
 
 vector<Column> columns;
 vector<vector<string>> rows;
+
+bool isInteger(const string& s) {
+    if (s.empty()) return false;
+    for (char c : s) {
+        if (!isdigit(c)) return false;
+    }
+    return true;
+}
