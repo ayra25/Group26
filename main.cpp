@@ -43,3 +43,15 @@ bool isInteger(const string& s) {
     }
     return true;
 }
+
+string toLowerStr(string s) {
+    for (char &c : s) c = tolower(c);
+    return s;
+}
+
+string trim(const string& s) {
+    size_t first = s.find_first_not_of(" \t\n\r");
+    if (string::npos == first) return "";
+    size_t last = s.find_last_not_of(" \t\n\r");
+    return s.substr(first, (last - first + 1));
+}
