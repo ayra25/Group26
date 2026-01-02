@@ -185,3 +185,19 @@ int main() {
             cin.ignore(1000, '\n'); // Discard invalid input
         }
     }
+
+     // Column Definition: Define the name and data type for each column
+    for (int i = 0; i < colCount; i++) {
+        Column col;
+        string input;
+        while (true) {
+            cout << "Enter column " << i + 1 << " name with (TEXT) or (INT): ";
+            getline(cin, input);
+            if (!parseColumn(input, col)) {
+                cout << "Error: Column must include (INT) or (TEXT).\n";
+            } else {
+                columns.push_back(col);
+                break;
+            }
+        }
+    }
