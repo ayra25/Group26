@@ -81,4 +81,20 @@ void insertRow() {
     cout << "Insert New Attendance Row\n";
     cout << "-------------------------------------------\n";
 
-   
+// Loop through each defined column to get data for the new row
+    for (size_t i = 0; i < columns.size(); i++) {
+        string colNameLower = toLowerStr(columns[i].name);
+
+        while (true) { // Loop until valid input is provided for the current column
+            // Special validation for ID/StudentID columns (must be numbers)
+            if (colNameLower == "studentid" || colNameLower == "id") {
+                cout << "Enter " << columns[i].name << ": ";
+                getline(cin, v);
+                v = trim(v);
+                if (!isInteger(v) || v.empty()) {
+                    cout << "Error: Invalid INT value. Please enter a number.\n";
+                    continue;
+                }
+            } 
+        }
+    }
