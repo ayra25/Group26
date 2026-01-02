@@ -165,3 +165,23 @@ int main() {
     cout << "===========================================\n";
     cout << "   STUDENT ATTENDANCE TRACKER - MILESTONE 1\n";
     cout << "===========================================\n\n";
+
+     // Get the name of the sheet
+    cout << "Enter attendance sheet name: ";
+    getline(cin, sheetName);
+
+    // Display the sheet name
+    cout << "Attendance sheet \"" << sheetName << "\" created successfully.\n"; 
+
+    // Column Setup: Ask how many columns the user wants (1-10)
+    while (true) {
+        cout << "Define number of columns (1-10): ";
+        if (cin >> colCount && colCount >= 1 && colCount <= 10) {
+            cin.ignore(); // Clear the newline character from the buffer
+            break;
+        } else {
+            cout << "Invalid input. Please enter a number between 1 and 10.\n";
+            cin.clear(); // Clear error flags
+            cin.ignore(1000, '\n'); // Discard invalid input
+        }
+    }
