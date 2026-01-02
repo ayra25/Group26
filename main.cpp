@@ -96,5 +96,15 @@ void insertRow() {
                     continue;
                 }
             } 
+             // Special validation for 'Status' (must be 0 or 1)
+            else if (colNameLower == "status") {
+                cout << "Enter Status (1:Present, 0:Absent) : ";
+                getline(cin, v);
+                v = trim(v);
+                if (v != "0" && v != "1") {
+                    cout << "Error: Status must be 0 or 1.\n";
+                    continue;
+        }
+    }
         }
     }
