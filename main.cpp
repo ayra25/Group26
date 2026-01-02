@@ -152,3 +152,16 @@ void viewSheet() {
         cout << endl;
     }
 }
+
+/////////////////////////////////////////////////////////////
+// MAIN PROGRAM & MENU
+/////////////////////////////////////////////////////////////
+
+int main() {
+    string sheetName;
+    int colCount;
+    
+    // Display
+    cout << "===========================================\n";
+    cout << "   STUDENT ATTENDANCE TRACKER - MILESTONE 1\n";
+    cout << "===========================================\n\n";
