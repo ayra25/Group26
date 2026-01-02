@@ -106,5 +106,28 @@ void insertRow() {
                     continue;
         }
     }
+        
+ // Generic validation based on the data type (INT or TEXT)
+            else {
+                cout << "Enter " << columns[i].name << ": ";
+                getline(cin, v);
+                v = trim(v);
+                if (columns[i].type == INT) {
+                    if (!isInteger(v) || v.empty()) {
+                        cout << "Error: Invalid INT value.\n";
+                        continue;
+                    }
+                } else {
+                    if (v.empty()) {
+                        cout << "Error: TEXT value cannot be empty.\n";
+                        continue;
+                    }
+                }
+            }
+            newRow[i] = v; // Save valid input to the row
+            break; 
         }
     }
+    rows.push_back(newRow); // Add the completed row to the global data storage
+    cout << "Row inserted successfully.\n";
+}
