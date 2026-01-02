@@ -14,10 +14,24 @@ using namespace std;
 // Trimester: 2530
 // Member_1: 252UC24259 | AYRA ADEENA BINTI AZRIN | ayra.adeena.azrin1@student.mmu.edu.my | 0192242006 
 // Member_2: 252UC242PE | KADEESYA ALYA BINTI KAMARUDDIN | kadeesya.alya.kamaruddin1@student.mmu.edu.my | 0178982711
-// Member_3: 252UC242RA | MUHAMMAD IRFAN ZIKRY BIN NORHESHAM | MUHAMMD.IRFAN.ZIKRY1@student.mmu.edu.my | 0133965497
+// Member_3: 252UC242RA | MUHAMMAD IRFAN ZIKRY BIN NORHESHAM | MUHAMMAD.IRFAN.ZIKRY1@student.mmu.edu.my | 0133965497
 // *********************************************************
 // Task Distribution
 // Member_1: DATA STRUCTURES & UTILITY FUNCTIONS
 // Member_2: ROW OPERATIONS & CSV VIEW MODE
 // Member_3: MAIN PROGRAM & MENU
 // *********************************************************
+
+/////////////////////////////////////////////////////////////
+// DATA STRUCTURES & UTILITY FUNCTIONS
+/////////////////////////////////////////////////////////////
+
+enum DataType { INT, TEXT };
+
+struct Column {
+    string name;
+    DataType type;
+};
+
+vector<Column> columns;
+vector<vector<string>> rows;
