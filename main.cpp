@@ -55,3 +55,19 @@ string trim(const string& s) {
     size_t last = s.find_last_not_of(" \t\n\r");
     return s.substr(first, (last - first + 1));
 }
+
+bool parseColumn(const string& input, Column& col) {
+    size_t pos = input.find('(');
+    size_t end = input.find(')');
+    if (pos == string::npos || end == string::npos || end <= pos) return false;
+
+    string typeStr = input.substr(pos + 1, end - pos - 1);
+    string namePart = input.substr(0, pos);
+    col.name = trim(namePart);
+
+    if (typeStr == "INT") col.type = INT;
+    else if (typeStr == "TEXT") col.type = TEXT;
+    else return false;
+
+    return true;
+}
