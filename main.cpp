@@ -201,3 +201,41 @@ int main() {
             }
         }
     }
+
+     // Main Menu Loop: Allows user to insert data, view data, or exit (do while loop)
+    int choice;
+    do {
+        cout << "-------------------------------------------\n";
+        cout << "1. Insert New Attendance Row\n";
+        cout << "2. View Attendance Sheet\n";
+        cout << "3. Exit Program\n";
+        cout << "-------------------------------------------\n";
+        cout << "Enter choice: ";
+        
+        if (!(cin >> choice)) {
+            cout << "Invalid choice. Try again.\n";
+            cin.clear(); 
+            cin.ignore(1000, '\n');
+            continue;
+        }
+        cin.ignore(); // Clear newline after reading 'choice'
+
+        //Call the function based on user choice
+        if (choice == 1) {
+            cout << "\n";
+            insertRow();
+        }
+        else if (choice == 2) {
+            cout << "\n";
+            viewSheet();
+        }
+        else if (choice == 3) {
+            cout << "\nEnd of Milestone 1 Output\n";
+        }
+        else {
+            cout << "Invalid choice. Try again.\n";
+        }
+    } while (choice != 3); // Condition to keep the loop running
+
+    return 0;
+}
