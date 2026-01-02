@@ -71,3 +71,14 @@ bool parseColumn(const string& input, Column& col) {
 
     return true;
 }
+
+// Handles the logic for adding a new entry to the attendance sheet
+void insertRow() {
+    vector<string> newRow(columns.size());
+    string v;
+
+    cout << "-------------------------------------------\n";
+    cout << "Insert New Attendance Row\n";
+    cout << "-------------------------------------------\n";
+
+   
