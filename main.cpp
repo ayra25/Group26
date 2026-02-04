@@ -2,7 +2,8 @@
 #include <vector>
 #include <string>
 #include <cctype>
-#include <algorithm>
+#include <fstream>
+#include <sstream>
 
 using namespace std;
 
@@ -33,8 +34,18 @@ struct Column {
     DataType type;
 };
 
+// Global containers for table structure and data
 vector<Column> columns;
 vector<vector<string>> rows;
+
+// Global variables for file handling
+string termName;
+string sheetName;
+string dataFileName;
+
+/////////////////////////////////////////////////////////////
+// UTILITY FUNCTIONS
+/////////////////////////////////////////////////////////////
 
 bool isInteger(const string& s) {
     if (s.empty()) return false;
@@ -72,170 +83,226 @@ bool parseColumn(const string& input, Column& col) {
     return true;
 }
 
-// Handles the logic for adding a new entry to the attendance sheet
+/////////////////////////////////////////////////////////////
+// FILE OPERATIONS
+/////////////////////////////////////////////////////////////
+
+
+
+/////////////////////////////////////////////////////////////
+// CORE FEATURES (FROM MILESTONE 1, EXTENDED)
+/////////////////////////////////////////////////////////////
+
+// Insert a new attendance record
 void insertRow() {
     vector<string> newRow(columns.size());
-    string v;
+    string value;
 
-    cout << "-------------------------------------------\n";
+    cout << "\n-------------------------------------------\n";
     cout << "Insert New Attendance Row\n";
     cout << "-------------------------------------------\n";
 
-// Loop through each defined column to get data for the new row
     for (size_t i = 0; i < columns.size(); i++) {
         string colNameLower = toLowerStr(columns[i].name);
 
-        while (true) { // Loop until valid input is provided for the current column
-            // Special validation for ID/StudentID columns (must be numbers)
-            if (colNameLower == "studentid" || colNameLower == "id") {
-                cout << "Enter " << columns[i].name << ": ";
-                getline(cin, v);
-                v = trim(v);
-                if (!isInteger(v) || v.empty()) {
-                    cout << "Error: Invalid INT value. Please enter a number.\n";
+        while (true) {
+            cout << "Enter " << columns[i].name << ": ";
+            getline(cin, value);
+            value = trim(value);
+
+            // Special validation for Status column
+            if (colNameLower == "status") {
+                if (value != "0" && value != "1") {
+                    cout << "Error: Status must be 0 (Absent) or 1 (Present).\n";
                     continue;
-                }
-            } 
-             // Special validation for 'Status' (must be 0 or 1)
-            else if (colNameLower == "status") {
-                cout << "Enter Status (1:Present, 0:Absent) : ";
-                getline(cin, v);
-                v = trim(v);
-                if (v != "0" && v != "1") {
-                    cout << "Error: Status must be 0 or 1.\n";
-                    continue;
-        }
-    }
-        
- // Generic validation based on the data type (INT or TEXT)
-            else {
-                cout << "Enter " << columns[i].name << ": ";
-                getline(cin, v);
-                v = trim(v);
-                if (columns[i].type == INT) {
-                    if (!isInteger(v) || v.empty()) {
-                        cout << "Error: Invalid INT value.\n";
-                        continue;
-                    }
-                } else {
-                    if (v.empty()) {
-                        cout << "Error: TEXT value cannot be empty.\n";
-                        continue;
-                    }
                 }
             }
-            newRow[i] = v; // Save valid input to the row
-            break; 
+            // Integer validation
+            else if (columns[i].type == INT) {
+                if (!isInteger(value)) {
+                    cout << "Error: Invalid INT value.\n";
+                    continue;
+                }
+            }
+            // Text validation
+            else {
+                if (value.empty()) {
+                    cout << "Error: TEXT value cannot be empty.\n";
+                    continue;
+                }
+            }
+
+            newRow[i] = value;
+            break;
         }
     }
-    rows.push_back(newRow); // Add the completed row to the global data storage
+
+    rows.push_back(newRow);
     cout << "Row inserted successfully.\n";
 }
 
-// Displays all data in the table in a comma-separated format
+// Display attendance sheet in CSV format
 void viewSheet() {
+    cout << "\n-------------------------------------------\n";
+    cout << "Attendance Sheet (CSV Mode)\n";
     cout << "-------------------------------------------\n";
-    cout << "View Attendance Sheet (CSV Mode)\n";
-    cout << "-------------------------------------------\n";
-    
-    // Print column headers
+
+    // Display column headers
     for (size_t i = 0; i < columns.size(); i++) {
-        cout << columns[i].name << (i == columns.size() - 1 ? "" : ", ");
+        cout << columns[i].name;
+        if (i != columns.size() - 1) cout << ", ";
     }
     cout << endl;
 
-    // Print each row of data
+    // Display records
     for (const auto& row : rows) {
-        for (size_t i = 0; i < row.size(); i++) {
-            cout << row[i] << (i == row.size() - 1 ? "" : ", ");
+        for (size_t j = 0; j < row.size(); j++) {
+            cout << row[j];
+            if (j != row.size() - 1) cout << ", ";
         }
         cout << endl;
     }
 }
 
 /////////////////////////////////////////////////////////////
-// MAIN PROGRAM & MENU
+// UPDATE ROW FEATURE
 /////////////////////////////////////////////////////////////
 
-int main() {
-    string sheetName;
-    int colCount;
-    
-    // Display
-    cout << "===========================================\n";
-    cout << "   STUDENT ATTENDANCE TRACKER - MILESTONE 1\n";
-    cout << "===========================================\n\n";
+// Update an existing attendance record
+void updateRow() {
+    string keyValue;
+    cout << "Enter " << columns[0].name << " to update: ";
+    getline(cin, keyValue);
 
-     // Get the name of the sheet
-    cout << "Enter attendance sheet name: ";
-    getline(cin, sheetName);
+    for (size_t i = 0; i < rows.size(); i++) {
+        if (rows[i][0] == keyValue) {
 
-    // Display the sheet name
-    cout << "Attendance sheet \"" << sheetName << "\" created successfully.\n"; 
+            for (size_t j = 1; j < columns.size(); j++) {
+                string newValue;
+                cout << "Enter new value for " << columns[j].name
+                     << " (leave blank to keep current): ";
+                getline(cin, newValue);
+                newValue = trim(newValue);
 
-    // Column Setup: Ask how many columns the user wants (1-10)
-    while (true) {
-        cout << "Define number of columns (1-10): ";
-        if (cin >> colCount && colCount >= 1 && colCount <= 10) {
-            cin.ignore(); // Clear the newline character from the buffer
-            break;
-        } else {
-            cout << "Invalid input. Please enter a number between 1 and 10.\n";
-            cin.clear(); // Clear error flags
-            cin.ignore(1000, '\n'); // Discard invalid input
+                if (!newValue.empty()) {
+                    string colNameLower = toLowerStr(columns[j].name);
+
+                    // Status validation
+                    if (colNameLower == "status") {
+                        if (newValue != "0" && newValue != "1") {
+                            cout << "Error: Status must be 0 or 1.\n";
+                            continue;
+                        }
+                    }
+                    // Integer validation
+                    else if (columns[j].type == INT && !isInteger(newValue)) {
+                        cout << "Error: Invalid INT value.\n";
+                        continue;
+                    }
+
+                    rows[i][j] = newValue;
+                }
+            }
+
+            cout << "Row updated successfully.\n";
+            return;
         }
     }
 
-     // Column Definition: Define the name and data type for each column
-    for (int i = 0; i < colCount; i++) {
-        Column col;
-        string input;
-        while (true) {
-            cout << "Enter column " << i + 1 << " name with (TEXT) or (INT): ";
-            getline(cin, input);
-            if (!parseColumn(input, col)) {
-                cout << "Error: Column must include (INT) or (TEXT).\n";
-            } else {
-                columns.push_back(col);
-                break;
+    cout << "Error: Record not found.\n";
+}
+
+/////////////////////////////////////////////////////////////
+// DELETE ROW FEATURE
+/////////////////////////////////////////////////////////////
+
+/////////////////////////////////////////////////////////////
+// SAVE & EXIT FEATURE
+/////////////////////////////////////////////////////////////
+
+/////////////////////////////////////////////////////////////
+// MAIN PROGRAM
+/////////////////////////////////////////////////////////////
+
+int main() {
+    cout << "===========================================\n";
+    cout << "   STUDENT ATTENDANCE TRACKER - MILESTONE 2\n";
+    cout << "===========================================\n\n";
+
+    // Input term and sheet names
+    cout << "Enter school term name: ";
+    getline(cin, termName);
+
+    cout << "Enter attendance sheet name: ";
+    getline(cin, sheetName);
+
+    // Generate file name
+    dataFileName = termName + "_" + sheetName + ".csv";
+
+    // Load existing data or create new sheet
+    if (fileExists(dataFileName)) {
+        cout << "Previous data found. Loading...\n";
+        loadFromFile(dataFileName);
+    } else {
+        cout << "No existing data found. Creating new sheet.\n";
+
+        int colCount;
+        do {
+            cout << "Define number of columns (1-10): ";
+            cin >> colCount;
+            cin.ignore();
+        } while (colCount < 1 || colCount > 10);
+
+        for (int i = 0; i < colCount; i++) {
+            Column col;
+            string input;
+
+            while (true) {
+                cout << "Enter column " << i + 1
+                     << " name with (INT) or (TEXT): ";
+                getline(cin, input);
+
+                if (!parseColumn(input, col))
+                    cout << "Error: Invalid column format.\n";
+                else {
+                    columns.push_back(col);
+                    break;
+                }
             }
         }
     }
 
-     // Main Menu Loop: Allows user to insert data, view data, or exit (do while loop)
+    // Menu-driven program loop
     int choice;
     do {
-        cout << "-------------------------------------------\n";
+        cout << "\n-------------------------------------------\n";
         cout << "1. Insert New Attendance Row\n";
         cout << "2. View Attendance Sheet\n";
-        cout << "3. Exit Program\n";
+        cout << "3. Update Attendance Row\n";
+        cout << "4. Delete Attendance Row\n";
+        cout << "5. Count Rows\n";
+        cout << "6. Save & Exit\n";
         cout << "-------------------------------------------\n";
         cout << "Enter choice: ";
-        
-        if (!(cin >> choice)) {
-            cout << "Invalid choice. Try again.\n";
-            cin.clear(); 
-            cin.ignore(1000, '\n');
-            continue;
-        }
-        cin.ignore(); // Clear newline after reading 'choice'
+        cin >> choice;
+        cin.ignore();
 
-        //Call the function based on user choice
-        if (choice == 1) {
-            cout << "\n";
-            insertRow();
+        switch (choice) {
+        case 1: insertRow(); break;
+        case 2: viewSheet(); break;
+        case 3: updateRow(); break;
+        case 4: deleteRow(); break;
+        case 5: countRows(); break;
+        case 6:
+            saveToFile(dataFileName);
+            cout << "Data saved successfully.\n";
+            break;
+        default:
+            cout << "Invalid choice.\n";
         }
-        else if (choice == 2) {
-            cout << "\n";
-            viewSheet();
-        }
-        else if (choice == 3) {
-            cout << "\nEnd of Milestone 1 Output\n";
-        }
-        else {
-            cout << "Invalid choice. Try again.\n";
-        }
-    } while (choice != 3); // Condition to keep the loop running
+    } while (choice != 6);
 
     return 0;
 }
+
+
