@@ -220,6 +220,28 @@ void updateRow() {
 // SAVE & EXIT FEATURE
 /////////////////////////////////////////////////////////////
 
+void saveToFile(const string& filename) {
+    ofstream file(filename.c_str());
+
+    // Write column headers
+    for (size_t i = 0; i < columns.size(); i++) {
+        file << columns[i].name;
+        if (i != columns.size() - 1) file << ", ";
+    }
+    file << endl;
+
+    // Write attendance records
+    for (const auto& row : rows) {
+        for (size_t j = 0; j < row.size(); j++) {
+            file << row[j];
+            if (j != row.size() - 1) file << ", ";
+        }
+        file << endl;
+    }
+
+    file.close();
+}
+
 /////////////////////////////////////////////////////////////
 // MAIN PROGRAM
 /////////////////////////////////////////////////////////////
