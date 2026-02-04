@@ -83,10 +83,49 @@ bool parseColumn(const string& input, Column& col) {
     return true;
 }
 
+bool fileExists(const string& filename) {
+    ifstream file(filename.c_str());
+    return file.good();
+}
 /////////////////////////////////////////////////////////////
 // FILE OPERATIONS
 /////////////////////////////////////////////////////////////
+// Load column headers and attendance data from CSV file
+void loadFromFile(const string& filename) {
+    ifstream file(filename.c_str());
+    if (!file) return;
 
+    columns.clear();
+    rows.clear();
+    string line;
+
+    // Read column headers
+    if (getline(file, line)) {
+        stringstream ss(line);
+        string colName;
+
+        while (getline(ss, colName, ',')) {
+            Column col;
+            col.name = trim(colName);
+            col.type = TEXT; // Default type when loading from file
+            columns.push_back(col);
+        }
+    }
+
+    // Read attendance records
+    while (getline(file, line)) {
+        vector<string> row;
+        string value;
+        stringstream ss(line);
+
+        while (getline(ss, value, ',')) {
+            row.push_back(trim(value));
+        }
+        rows.push_back(row);
+    }
+
+    file.close();
+}
 
 
 /////////////////////////////////////////////////////////////
@@ -215,7 +254,21 @@ void updateRow() {
 /////////////////////////////////////////////////////////////
 // DELETE ROW FEATURE
 /////////////////////////////////////////////////////////////
+void deleteRow() {
+    string keyValue;
+    cout << "Enter " << columns[0].name << " to delete: ";
+    getline(cin, keyValue);
 
+    for (size_t i = 0; i < rows.size(); i++) {
+        if (rows[i][0] == keyValue) {
+            rows.erase(rows.begin() + i);
+            cout << "Row deleted successfully.\n";
+            return;
+        }
+    }
+
+    cout << "Error: Record not found.\n";
+}
 
 // Display total number of attendance records
 void countRows() {
